@@ -1,0 +1,45 @@
+# Microsoft 365 Exchange Online 로그인
+Connect-ExchangeOnline -UserPrincipalName kjm0108@midasin.com
+
+# 공유 사서함 이름 설정 (최신화)
+$SharedMailbox = ""
+
+# 추가할 구성원 목록 (최신화)
+$NewMembers = @(
+
+)
+
+# Exchange Online 연결 (관리자 계정 로그인 필요)
+Connect-ExchangeOnline -UserPrincipalName kjm0108@midasin.com
+
+### 1️⃣ 기존 공유 사서함 구성원 삭제 ###
+Write-Host "Retrieving existing Full Access members..."
+$ExistingFullAccess = Get-MailboxPermission -Identity $SharedMailbox | Where-Object { $_.AccessRights -contains "FullAccess" -and $_.User -notlike "NT AUTHORITY\*" } | Select-Object User
+
+foreach ($user in $ExistingFullAccess) {
+    $userEmail = $user.User -replace ".*\\", ""  # 사용자 이메일 주소 추출
+    Write-Host "Removing Full Access from $userEmail..."
+    Remove-MailboxPermission -Identity $SharedMailbox -User $userEmail -AccessRights FullAccess -Confirm:$false
+}
+
+Write-Host "Retrieving existing SendAs members..."
+$ExistingSendAs = Get-RecipientPermission -Identity $SharedMailbox | Where-Object { $_.AccessRights -contains "SendAs" } | Select-Object Trustee
+
+foreach ($user in $ExistingSendAs) {
+    $userEmail = $user.Trustee
+    Write-Host "Removing SendAs Permission from $userEmail..."
+    Remove-RecipientPermission -Identity $SharedMailbox -Trustee $userEmail -AccessRights SendAs -Confirm:$false
+}
+
+### 2️⃣ 새로운 구성원 추가 ###
+foreach ($member in $NewMembers) {
+    Write-Host "Adding Full Access to $member..."
+    Add-MailboxPermission -Identity $SharedMailbox -User $member -AccessRights FullAccess -InheritanceType All -Confirm:$false
+    
+    Write-Host "Adding SendAs Permission to $member..."
+    Add-RecipientPermission -Identity $SharedMailbox -Trustee $member -AccessRights SendAs -Confirm:$false
+}
+
+# 완료 메시지 출력
+Write-Host "All previous members removed. New members added successfully."
+
