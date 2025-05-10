@@ -10,7 +10,7 @@ $NewMembers = @(
 )
 
 # Exchange Online 연결 (관리자 계정 로그인 필요)
-Connect-ExchangeOnline -UserPrincipalName kjm0108@midasin.com
+Connect-ExchangeOnline -UserPrincipalName ${관리자 계정}
 
 ### 1️⃣ 기존 공유 사서함 구성원 삭제 ###
 Write-Host "Retrieving existing Full Access members..."
