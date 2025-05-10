@@ -1,13 +1,13 @@
 # Exchange Online 연결 (관리자 계정 로그인 필요)
-Connect-ExchangeOnline -UserPrincipalName kjm0108@midasin.com
-
+Connect-ExchangeOnline -UserPrincipalName ${관리자 계정}
 # 추가할 구성원 목록 (최신화)
 # 메일 그룹(배포 목록) 이름 설정
-$SharedMailbox = "h.support@h.place"
+$SharedMailbox = "${메일그룹이름}"
 
+# 추가할 구성원 메일
 $NewMembers = @(
-"kjm0108@midasin.com"
-"kjm0108@midasit.com"
+""
+""
 )
 
 
